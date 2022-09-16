@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient } from '@angular/common/http';
-import { ApiserviceService } from './apiservice.service';
 import { FormBuilder, FormGroup } from '@angular/forms'
+import { ApiserviceService } from '../apiservice.service';
+
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: 'app-viewcomponent',
+  templateUrl: './viewcomponent.component.html',
+  styleUrls: ['./viewcomponent.component.css']
 })
-export class AppComponent {
-  title = 'project';
+export class ViewcomponentComponent implements OnInit {
+
   userForm!:FormGroup;
+  @Input() item!: any; 
+
   constructor(private modalService: NgbModal,
     private http: HttpClient, private apiservice: ApiserviceService,
     private formBuilder: FormBuilder) { }
@@ -20,14 +23,38 @@ export class AppComponent {
   }
 
   ngOnInit() {
+    if(this.item) {
+      this.openEditForm();
+    } else {
+      this.initForm();
+    }
     this.userForm = this.formBuilder.group({
       name: [''],
       job: [''],
     });
   }
 
+  initForm() {
+    this.userForm = this.formBuilder.group({
+      name: [''],
+      job: [''],
+    });
+  }
+
+  openEditForm() {
+    console.log("edit",this.item)
+    this.userForm = this.formBuilder.group({
+      name: [this.item?.first_name],
+      job: [this.item?.last_name],
+    });
+  }
+
   onSubmit() {
-    this.formSubmit();
+    if (this.item) {
+      this.updateData(); // method for update
+    } else {
+      this.formSubmit();
+    }
   }
 
 
